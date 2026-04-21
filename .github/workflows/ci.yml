@@ -6,10 +6,16 @@ on:
   pull_request:
     branches: [ main ]
   workflow_call:
+  schedule:
+    - cron: '0 2 * * *'
 
 jobs:
   lint-and-test:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency:
+      group: ci-${{ github.ref }}-${{ matrix.node-version }}
+      cancel-in-progress: true
     strategy:
       matrix:
         node-version: [18, 20, 22]
@@ -39,3 +45,5 @@ jobs:
           name: coverage-report
           path: coverage/
           retention-days: 7
+
+
